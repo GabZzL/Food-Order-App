@@ -7,7 +7,7 @@ import Modal from './Modal';
 export function Header() {
     const modal = useRef();
 
-    const { mealsNumber } = useContext(CartContext);
+    const { userCart } = useContext(CartContext);
 
     function handleOpenCart() {
         modal.current.open();
@@ -28,7 +28,7 @@ export function Header() {
                     className='meal-item-price'
                     onClick={handleOpenCart}
                 >
-                    {mealsNumber === 0 ? 'Cart' : `Cart(${mealsNumber})`}
+                    {userCart.length === 0 ? 'Cart' : `Cart(${userCart.length})`}
                 </button>
             </header>
         </>
