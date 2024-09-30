@@ -1,50 +1,55 @@
-import { useContext } from "react"
+import { useContext } from "react";
 
-import { CartContext } from "../store/meal-cart-context"
-import { formatPrice } from "../utils";
+import { CartContext } from "../store/meal-cart-context";
+import { UserProgressContext } from "../store/user-progress-context";
+import { getTotal, currencyFormatter } from "../util/formatting";
+import Modal from "./UI/Modal";
+import Button from "./UI/Button";
 
 export function Cart() {
-    const { userCart, updateMealCartQuantity, openCheckout } = useContext(CartContext);
+  const { userCart, updateMealCartQuantity } = useContext(CartContext);
+  const { progress, hideCart, showCheckout } = useContext(UserProgressContext);
 
-    return(
-        <div className="cart">
-            <h2>Your Cart</h2>
-            {userCart.length === 0 
-                ? 
-                <p>Your cart is empty. Please select some items from the menu.</p> 
-                : 
-                <ul>
-                    {userCart.map((item) => (
-                        <li key={item.id} className="cart-item">
-                            <div>
-                                <p>{item.name} - {item.price}</p>
-                            </div>
-                            <div className="cart-item-actions">
-                                <button onClick={() => updateMealCartQuantity(item.id, -1)}>
-                                    -
-                                </button>
-                                <span>{item.quantity}</span>
-                                <button onClick={() => updateMealCartQuantity(item.id, 1)}>
-                                    +
-                                </button>
-                            </div>
-                        </li>
-                    ))}
-                    <p className="cart-total">
-                        {formatPrice(userCart)}
-                    </p>
-                </ul>
-            }
-            <form method="dialog" className="modal-actions">
-                <button className="text-button">Go Back</button>
-                <button 
-                    className="button" 
-                    onClick={openCheckout}
-                    disabled={userCart.length === 0} 
-                >
-                    Checkout
+  return (
+    <Modal
+      className="cart"
+      open={progress === "cart"}
+      onClose={progress === "cart" ? hideCart : null}
+    >
+      <h2>Your Cart</h2>
+      {userCart.length === 0 ? (
+        <p>Your cart is empty. Please select some items from the menu.</p>
+      ) : (
+        <ul>
+          {userCart.map((item) => (
+            <li key={item.id} className="cart-item">
+              <p>
+                {item.name} - {currencyFormatter.format(item.price)}
+              </p>
+              <p className="cart-item-actions">
+                <button onClick={() => updateMealCartQuantity(item.id, -1)}>
+                  -
                 </button>
-            </form>
-        </div>
-    )
+                <span>{item.quantity}</span>
+                <button onClick={() => updateMealCartQuantity(item.id, 1)}>
+                  +
+                </button>
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="cart-total">
+        {currencyFormatter.format(getTotal(userCart))}
+      </p>
+      <p className="modal-actions">
+        <Button textOnly onClick={hideCart}>
+          Close
+        </Button>
+        <Button disabled={userCart.length === 0} onClick={showCheckout}>
+          Go to Checkout
+        </Button>
+      </p>
+    </Modal>
+  );
 }

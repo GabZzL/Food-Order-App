@@ -1,36 +1,33 @@
-import { useRef, useContext } from 'react';
+import { useContext } from "react";
 
-import { CartContext } from '../store/meal-cart-context';
-import foodLogo from '../assets/logo.jpg';
-import Modal from './Modal';
+import { CartContext } from "../store/meal-cart-context";
+import { UserProgressContext } from "../store/user-progress-context";
+import { getItemsNumber } from "../util/formatting";
+import foodLogo from "../assets/logo.jpg";
+import Button from "./UI/Button";
 
 export function Header() {
-    const modal = useRef();
+  const { userCart } = useContext(CartContext);
+  const { showCart } = useContext(UserProgressContext);
 
-    const { userCart } = useContext(CartContext);
-
-    function handleOpenCart() {
-        modal.current.open();
-    }
-
-    return(
-        <>
-            <Modal 
-                ref={modal}
-            />
-            <header id='main-header'>
-                <div id='title'>
-                    <img src={foodLogo} alt="food-logo" />
-                    <h1>React Food</h1>
-                </div>
-
-                <button 
-                    className='meal-item-price'
-                    onClick={handleOpenCart}
-                >
-                    {userCart.length === 0 ? 'Cart' : `Cart(${userCart.length})`}
-                </button>
-            </header>
-        </>
-    )
+  return (
+    <>
+      <header id="main-header">
+        <div id="title">
+          <img src={foodLogo} alt="food-logo" />
+          <h1>React Food</h1>
+        </div>
+        <nav>
+          <Button
+            textOnly // set to true automatically
+            onClick={showCart}
+          >
+            {userCart.length === 0
+              ? "Cart"
+              : `Cart(${getItemsNumber(userCart)})`}
+          </Button>
+        </nav>
+      </header>
+    </>
+  );
 }
